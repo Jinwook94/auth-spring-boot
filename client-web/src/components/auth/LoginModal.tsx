@@ -6,6 +6,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { API_ENDPOINTS } from "@/api/endpoints.ts";
+import { BASE_URL } from "@/api/client";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -14,18 +16,15 @@ interface LoginModalProps {
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleGoogleLogin = () => {
-    // 구글 로그인 로직 구현
-    console.log("Google login clicked");
+    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.googleLogin}`;
   };
 
   const handleKakaoLogin = () => {
-    // 카카오 로그인 로직 구현
-    console.log("Kakao login clicked");
+    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.kakaoLogin}`;
   };
 
   const handleNaverLogin = () => {
-    // 네이버 로그인 로직 구현
-    console.log("Naver login clicked");
+    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.naverLogin}`;
   };
 
   return (

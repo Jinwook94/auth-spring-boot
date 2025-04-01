@@ -13,8 +13,10 @@ import {
   SortParams,
 } from "./types";
 
+export const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
+  baseURL: BASE_URL,
   timeout: 10000,
   withCredentials: true,
   headers: {
