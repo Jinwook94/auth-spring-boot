@@ -3,6 +3,8 @@ spring:
     name: server-core
   profiles:
     active: local
+  flyway:
+    enabled: false
 
 server:
   port: 9000
