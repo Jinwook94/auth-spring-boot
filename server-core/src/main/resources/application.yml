@@ -30,3 +30,11 @@ decorator:
     p6spy:
       enable-logging: false
 
+http:
+  client:
+    connect-timeout-millis: 5000
+    read-timeout-seconds: 5
+    pool:
+      name: defaultPool
+      max-connections: 50
+
