@@ -1,12 +1,12 @@
 package org.core.exception
 
 import jakarta.validation.ConstraintViolationException
+import org.core.common.CustomResponse
 import org.core.exception.ErrorType.*
 import org.core.exception.base.BadRequestException
 import org.core.exception.base.ForbiddenException
 import org.core.exception.base.UnauthorizedException
 import org.core.exception.dto.ValidationError
-import org.core.exception.util.toProblem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -14,8 +14,6 @@ import org.slf4j.event.Level
 import org.slf4j.event.Level.ERROR
 import org.slf4j.event.Level.INFO
 import org.springframework.http.HttpStatus
-import org.springframework.http.ProblemDetail
-import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindException
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -23,9 +21,6 @@ import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.context.request.RequestContextHolder
-import org.springframework.web.context.request.ServletRequestAttributes
-import java.net.URI
 
 /**
  * 에러 공통 처리를 여기서 하고 로그를 찍긴 하지만,
@@ -36,93 +31,99 @@ class GlobalExceptionHandler {
     private val logger: Logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
     @ExceptionHandler(BadRequestException::class)
-    fun badRequestExceptionHandler(e: BadRequestException): ResponseEntity<ProblemDetail> {
+    fun badRequestExceptionHandler(e: BadRequestException): CustomResponse<Nothing> {
         val errorType = e.getErrorType()
         val additionalInfo = e.getAdditionalInfo()
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            errorType,
-            e.message,
-            ERROR,
-            additionalInfo
+
+        logException(e, errorType.status, e.message, ERROR)
+
+        return CustomResponse.error(
+            code = errorType.code,
+            message = e.message ?: errorType.message,
+            additionalInfo = additionalInfo
         )
-        return ResponseEntity.status(errorType.status).body(problemDetail)
     }
 
     @ExceptionHandler(ForbiddenException::class)
-    fun forBiddenExceptionHandler(e: ForbiddenException): ResponseEntity<ProblemDetail> {
+    fun forBiddenExceptionHandler(e: ForbiddenException): CustomResponse<Nothing> {
         val errorType = e.getErrorType()
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            errorType,
-            e.message,
-            ERROR
+        val additionalInfo = e.getAdditionalInfo()
+
+        logException(e, errorType.status, e.message, ERROR)
+
+        return CustomResponse.error(
+            code = errorType.code,
+            message = e.message ?: errorType.message,
+            additionalInfo = additionalInfo
         )
-        return ResponseEntity.status(errorType.status).body(problemDetail)
     }
 
 
     @ExceptionHandler(UnauthorizedException::class)
-    fun unauthorizedExceptionHandler(e: UnauthorizedException): ResponseEntity<ProblemDetail> {
+    fun unauthorizedExceptionHandler(e: UnauthorizedException): CustomResponse<Nothing> {
         val errorType = e.getErrorType()
+        val additionalInfo = e.getAdditionalInfo()
         val loggingLevel = if (errorType == EXPIRED_ACCESS_TOKEN) INFO else ERROR
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            errorType,
-            e.message,
-            loggingLevel
+
+        logException(e, errorType.status, e.message, loggingLevel)
+
+        return CustomResponse.error(
+            code = errorType.code,
+            message = e.message ?: errorType.message,
+            additionalInfo = additionalInfo
         )
-        return ResponseEntity.status(errorType.status).body(problemDetail)
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
-    fun constraintViolationExceptionHandler(e: ConstraintViolationException): ResponseEntity<ProblemDetail> {
+    fun constraintViolationExceptionHandler(e: ConstraintViolationException): CustomResponse<Nothing> {
         val validationErrors = extractValidationErrors(e.constraintViolations)
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            INVALID_REQUEST,
-            "요청 파라미터 유효성 검증 실패",
-            ERROR,
-            mapOf("violations" to validationErrors)
+        val additionalInfo = mapOf("violations" to validationErrors)
+
+        logException(e, INVALID_REQUEST.status, "요청 파라미터 유효성 검증 실패", ERROR)
+
+        return CustomResponse.error(
+            code = INVALID_REQUEST.code,
+            message = "요청 파라미터 유효성 검증 실패",
+            additionalInfo = additionalInfo
         )
-        return ResponseEntity.status(INVALID_REQUEST.status).body(problemDetail)
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun illegalArgumentExceptionHandler(e: IllegalArgumentException): ResponseEntity<ProblemDetail> {
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            INVALID_REQUEST,
-            e.message ?: "잘못된 요청입니다.",
-            ERROR
-        )
-        return ResponseEntity.status(INVALID_REQUEST.status).body(problemDetail)
-    }
+    fun illegalArgumentExceptionHandler(e: IllegalArgumentException): CustomResponse<Nothing> {
+        logException(e, INVALID_REQUEST.status, e.message ?: "잘못된 요청입니다.", ERROR)
 
-    @ExceptionHandler(BindException::class)
-    fun bindExceptionHandler(e: BindException): ResponseEntity<ProblemDetail> {
-        val validationErrors = extractValidationErrors(e.bindingResult)
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            INVALID_REQUEST,
-            "요청 본문 유효성 검증 실패",
-            ERROR,
-            mapOf("violations" to validationErrors)
+        return CustomResponse.error(
+            code = INVALID_REQUEST.code,
+            message = e.message ?: "잘못된 요청입니다.",
+            additionalInfo = null
         )
-        return ResponseEntity.status(INVALID_REQUEST.status).body(problemDetail)
+    }
+    @ExceptionHandler(BindException::class)
+    fun bindExceptionHandler(e: BindException): CustomResponse<Nothing> {
+        val validationErrors = extractValidationErrors(e.bindingResult)
+        val additionalInfo = mapOf("violations" to validationErrors)
+
+        logException(e, INVALID_REQUEST.status, "요청 본문 유효성 검증 실패", ERROR)
+
+        return CustomResponse.error(
+            code = INVALID_REQUEST.code,
+            message = "요청 본문 유효성 검증 실패",
+            additionalInfo = additionalInfo
+        )
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun methodArgumentExceptionHandler(e: MethodArgumentNotValidException): ResponseEntity<ProblemDetail> {
+    fun methodArgumentExceptionHandler(e: MethodArgumentNotValidException): CustomResponse<Nothing> {
         val validationErrors = extractValidationErrors(e.bindingResult)
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            INVALID_REQUEST,
-            "요청 본문 유효성 검증 실패",
-            ERROR,
-            mapOf("violations" to validationErrors)
+        val additionalInfo = mapOf("violations" to validationErrors)
+
+        logException(e, INVALID_REQUEST.status, "요청 본문 유효성 검증 실패", ERROR)
+
+        return CustomResponse.error(
+            code = INVALID_REQUEST.code,
+            message = "요청 본문 유효성 검증 실패",
+            additionalInfo = additionalInfo
         )
-        return ResponseEntity.status(INVALID_REQUEST.status).body(problemDetail)
     }
 
     @ExceptionHandler(
@@ -131,56 +132,38 @@ class GlobalExceptionHandler {
         RuntimeException::class,
         java.lang.IllegalStateException::class,
     )
-    fun unCaughtException(e: Exception): ResponseEntity<ProblemDetail> {
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            INTERNAL_SERVER_ERR,
-            e.message,
-            ERROR
+    fun unCaughtException(e: Exception): CustomResponse<Nothing> {
+        logException(e, INTERNAL_SERVER_ERR.status, e.message, ERROR)
+
+        return CustomResponse.error(
+            code = INTERNAL_SERVER_ERR.code,
+            message = "서버 오류가 발생했습니다.",
+            additionalInfo = null
         )
-        return ResponseEntity.status(INTERNAL_SERVER_ERR.status).body(problemDetail)
     }
 
+
     @ExceptionHandler(MissingRequestHeaderException::class)
-    fun missingRequestHeaderException(e: MissingRequestHeaderException): ResponseEntity<ProblemDetail> {
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            INVALID_REQUEST,
-            "필수 헤더값이 없습니다: ${e.headerName}",
-            ERROR
+    fun missingRequestHeaderException(e: MissingRequestHeaderException): CustomResponse<Nothing> {
+        val message = "필수 헤더값이 없습니다: ${e.headerName}"
+        logException(e, INVALID_REQUEST.status, message, ERROR)
+
+        return CustomResponse.error(
+            code = INVALID_REQUEST.code,
+            message = message,
+            additionalInfo = null
         )
-        return ResponseEntity.status(INVALID_REQUEST.status).body(problemDetail)
     }
 
     @ExceptionHandler(MissingServletRequestParameterException::class)
-    fun missingRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ProblemDetail> {
-        val problemDetail = handleExceptionWithProblem(
-            e,
-            INVALID_REQUEST,
-            "필수 파라미터가 없습니다: ${e.parameterName}",
-            ERROR
-        )
-        return ResponseEntity.status(INVALID_REQUEST.status).body(problemDetail)
-    }
+    fun missingRequestParameterException(e: MissingServletRequestParameterException): CustomResponse<Nothing> {
+        val message = "필수 파라미터가 없습니다: ${e.parameterName}"
+        logException(e, INVALID_REQUEST.status, message, ERROR)
 
-    private fun handleExceptionWithProblem(
-        e: Exception,
-        errorType: ErrorType,
-        detailMessage: String? = null,
-        loggingLevel: Level = ERROR,
-        additionalInfo: Map<String, Any?>? = null
-    ): ProblemDetail {
-        // 로깅 처리
-        logException(e, errorType.status, detailMessage, loggingLevel)
-
-        // 현재 요청 URI 가져오기
-        val requestURI = getCurrentRequestURI()
-
-        // ProblemDetail 생성 및 반환
-        return errorType.toProblem(
-            detail = detailMessage,
-            instance = requestURI,
-            additionalInfo = additionalInfo
+        return CustomResponse.error(
+            code = INVALID_REQUEST.code,
+            message = message,
+            additionalInfo = null
         )
     }
 
@@ -199,15 +182,6 @@ class GlobalExceptionHandler {
 
         // MDC 정보 제거
         MDC.remove("httpStatus")
-    }
-
-    private fun getCurrentRequestURI(): URI? {
-        return try {
-            val request = (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes).request
-            URI.create(request.requestURI)
-        } catch (e: Exception) {
-            null
-        }
     }
 
     private fun extractValidationErrors(bindingResult: BindingResult): List<ValidationError> {
