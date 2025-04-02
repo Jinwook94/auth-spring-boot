@@ -27,6 +27,10 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import java.net.URI
 
+/**
+ * 에러 공통 처리를 여기서 하고 로그를 찍긴 하지만,
+ * 실제 로깅 처리는 [org.core.logging.HttpJsonLayout] 에서 함
+ * */
 @RestControllerAdvice
 class GlobalExceptionHandler {
     private val logger: Logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
