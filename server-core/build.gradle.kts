@@ -34,6 +34,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
+	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.11.0")
 	implementation("org.flywaydb:flyway-core:11.5.0")
 	implementation("org.flywaydb:flyway-database-postgresql:11.5.0")
 	annotationProcessor("org.projectlombok:lombok")

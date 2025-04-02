@@ -24,3 +24,9 @@ management:
       system: true
       process: true
       http: true
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
+
