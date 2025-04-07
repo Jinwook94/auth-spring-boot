@@ -82,16 +82,23 @@ class JwtAuthFilter(
 
 	private fun authenticateWithRefreshToken(token: String, response: HttpServletResponse): Boolean {
 		return try {
-			// 리프레시 토큰 검증 및 조회
-			val refreshToken = refreshTokenService.findByToken(token)
-			jwtUtils.validateToken(token)
+			// 토큰 유효성 검증
+			val claims = jwtUtils.validateToken(token)
+
+			// 리프레시 토큰이 DB에 존재하는지 검증
+			refreshTokenService.findByToken(token)
+
+			// 클레임에서 사용자 ID 추출
+			val userId = jwtUtils.getUserIdFromToken(claims)
+
+			// ID로 사용자 정보 직접 조회
+			val user = userService.findById(userId)
 
 			// 새 액세스 토큰 발급
-			val user = refreshToken.user
 			val newAccessToken = jwtUtils.generateAccessToken(user.id!!, user.email, user.role)
 
 			// 인증 설정
-			setAuthenticationInContext(user, user.id!!)
+			setAuthenticationInContext(user, userId)
 
 			// 새 액세스 토큰을 응답 쿠키에 추가
 			val accessTokenCookie = jwtUtils.createAccessTokenCookie(newAccessToken)
