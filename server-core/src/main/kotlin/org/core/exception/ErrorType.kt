@@ -15,6 +15,10 @@ enum class ErrorType(
 
     EXPIRED_ACCESS_TOKEN(UNAUTHORIZED, "T001", "만료된 access token"),
 
+    MISSING_CONFIGURATION(INTERNAL_SERVER_ERROR, "C001", "필수 구성 설정이 누락되었습니다."),
+    OAUTH_SECRET_LOAD_FAILED(INTERNAL_SERVER_ERROR, "C002", "OAuth 시크릿 로드에 실패했습니다."),
+    AWS_SECRET_ACCESS_FAILED(INTERNAL_SERVER_ERROR, "C003", "AWS Secrets Manager 접근에 실패했습니다."),
+    OAUTH_ENV_VAR_MISSING(INTERNAL_SERVER_ERROR, "C004", "OAuth 환경 변수를 찾을 수 없습니다."),
     INTERNAL_SERVER_ERR(INTERNAL_SERVER_ERROR, "9999", "예기치 못한 서버오류")
     ;
 

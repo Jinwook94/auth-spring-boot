@@ -21,6 +21,15 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration
 
+app:
+  aws:
+    profile: cac-sso-workloads-dev
+    region: ap-northeast-2
+    secret-name: dev/oauth-secret
+  cookie-domain: localhost
+  client-base-url: http://localhost:5173
+  server-base-url: http://localhost:8000
+
 decorator:
   datasource:
     p6spy:
