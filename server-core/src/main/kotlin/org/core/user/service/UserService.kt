@@ -5,6 +5,7 @@ import org.core.exception.ErrorType.INVALID_REQUEST
 import org.core.exception.general.NotFoundException
 import org.core.user.domain.User
 import org.core.user.domain.UserRole
+import org.core.user.dto.UserResponse
 import org.core.user.repository.UserRepository
 import org.core.util.StringUtil.extractUsernameFromEmail
 import org.springframework.stereotype.Service
@@ -13,6 +14,12 @@ import java.util.UUID
 
 @Service
 class UserService(private val userRepository: UserRepository) {
+
+	@Transactional(readOnly = true)
+	fun getUserMe(id: UUID): UserResponse.UserMe {
+		val user = findById(id)
+		return UserResponse.UserMe.from(user)
+	}
 
 	@Transactional(readOnly = true)
 	fun findById(id: UUID): User {
