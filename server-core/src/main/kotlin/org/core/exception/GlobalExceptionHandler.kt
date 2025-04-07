@@ -63,7 +63,7 @@ class GlobalExceptionHandler {
     fun unauthorizedExceptionHandler(e: UnauthorizedException): CustomResponse<Nothing> {
         val errorType = e.getErrorType()
         val additionalInfo = e.getAdditionalInfo()
-        val loggingLevel = if (errorType == EXPIRED_ACCESS_TOKEN) INFO else ERROR
+        val loggingLevel = if (errorType == EXPIRED_TOKEN) INFO else ERROR
 
         logException(e, errorType.status, e.message, loggingLevel)
 

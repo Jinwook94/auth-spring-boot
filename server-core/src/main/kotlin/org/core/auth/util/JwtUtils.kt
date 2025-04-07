@@ -1,12 +1,13 @@
 package org.core.auth.util
 
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.http.HttpServletResponse
 import org.core.config.AppProperties
-import org.core.exception.ErrorType.INVALID_JWT
-import org.core.exception.ErrorType.INVALID_REQUEST
+import org.core.exception.ErrorType.*
 import org.core.exception.general.AuthenticationException
 import org.core.user.domain.UserRole
 import org.slf4j.LoggerFactory
@@ -71,8 +72,12 @@ class JwtUtils(
 				.build()
 				.parseSignedClaims(token)
 				.payload
+		} catch (e: SignatureException) {
+			throw AuthenticationException(INVALID_JWT_SIGNATURE, token, e)
+		} catch (e: ExpiredJwtException) {
+			throw AuthenticationException(EXPIRED_TOKEN, token, e)
 		} catch (e: Exception) {
-			throw AuthenticationException(INVALID_JWT, token, e)
+			throw AuthenticationException(FAIL_PARSE_TOKEN, token, e)
 		}
 	}
 

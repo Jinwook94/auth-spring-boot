@@ -124,7 +124,7 @@ class AuthService(
 			)
 			.retrieve()
 			.bodyToMono(TokenResponse.OAuthTokenResponse::class.java)
-			.block() ?: throw ExternalServiceException(OAUTH_TOKEN_REQUEST_FAILED, code)
+			.block() ?: throw ExternalServiceException(FAIL_OAUTH_TOKEN_REQUEST, code)
 
 		// 유저 정보 조회
 		val userInfoResponse = defaultWebClient.get()
@@ -132,7 +132,7 @@ class AuthService(
 			.header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenResponse.access_token}")
 			.retrieve()
 			.bodyToMono(TokenResponse.GoogleUserInfoResponse::class.java)
-			.block() ?: throw ExternalServiceException(OAUTH_USER_INFO_REQUEST_FAILED, tokenResponse.access_token)
+			.block() ?: throw ExternalServiceException(FAIL_OAUTH_USER_INFO_REQUEST, tokenResponse.access_token)
 
 		// 유저 조회 or 가입
 		val user = userService.findByEmailOrCreate(GOOGLE, userInfoResponse.email)
@@ -158,7 +158,7 @@ class AuthService(
 			)
 			.retrieve()
 			.bodyToMono(TokenResponse.OAuthTokenResponse::class.java)
-			.block() ?: throw ExternalServiceException(OAUTH_TOKEN_REQUEST_FAILED, code)
+			.block() ?: throw ExternalServiceException(FAIL_OAUTH_TOKEN_REQUEST, code)
 
 		// 유저 정보 조회
 		val userInfoResponse = defaultWebClient.get()
@@ -166,7 +166,7 @@ class AuthService(
 			.header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenResponse.access_token}")
 			.retrieve()
 			.bodyToMono(TokenResponse.NaverUserInfoResponse::class.java)
-			.block() ?: throw ExternalServiceException(OAUTH_USER_INFO_REQUEST_FAILED, tokenResponse.access_token)
+			.block() ?: throw ExternalServiceException(FAIL_OAUTH_USER_INFO_REQUEST, tokenResponse.access_token)
 
 		// 유저 조회 or 가입
 		val user = userService.findByEmailOrCreate(NAVER, userInfoResponse.response.email)
@@ -193,7 +193,7 @@ class AuthService(
 			)
 			.retrieve()
 			.bodyToMono(TokenResponse.OAuthTokenResponse::class.java)
-			.block() ?: throw ExternalServiceException(OAUTH_TOKEN_REQUEST_FAILED, code)
+			.block() ?: throw ExternalServiceException(FAIL_OAUTH_TOKEN_REQUEST, code)
 
 		// 유저 정보 조회
 		val userInfoResponse = defaultWebClient.get()
@@ -201,7 +201,7 @@ class AuthService(
 			.header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenResponse.access_token}")
 			.retrieve()
 			.bodyToMono(TokenResponse.KakaoUserInfoResponse::class.java)
-			.block() ?: throw ExternalServiceException(OAUTH_USER_INFO_REQUEST_FAILED, tokenResponse.access_token)
+			.block() ?: throw ExternalServiceException(FAIL_OAUTH_USER_INFO_REQUEST, tokenResponse.access_token)
 
 		// 유저 조회 or 가입
 		val user = userService.findByEmailOrCreate(KAKAO, userInfoResponse.kakao_account.email)
