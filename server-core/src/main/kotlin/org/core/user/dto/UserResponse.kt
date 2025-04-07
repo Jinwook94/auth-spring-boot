@@ -7,14 +7,14 @@ class UserResponse {
 
 	data class UserMe(
 		val id: UUID,
-		val name: String?,
+		val nickname: String?,
 		val email: String
 	) {
 		companion object {
 			fun from(user: User): UserMe {
 				return UserMe(
 					id = user.id!!,
-					name = user.nickname,
+					nickname = user.nickname,
 					email = user.email
 				)
 			}
