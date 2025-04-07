@@ -81,7 +81,8 @@ class AuthController(
 	) {
 		jwtUtils.setTokenCookies(response, tokens.accessToken, tokens.refreshToken)
 
-		val redirectUrl = "${appProperties.clientBaseUrl}?login=success"
+		// 인증 콜백 엔드포인트로 리디렉션
+		val redirectUrl = "${appProperties.clientBaseUrl}/auth/callback"
 		response.sendRedirect(redirectUrl)
 	}
 
