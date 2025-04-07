@@ -3,13 +3,14 @@ package org.core.user.domain
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
 import org.core.auth.domain.OAuthProvider
+import org.core.auth.domain.OAuthProviderConverter
 import org.core.common.BaseEntity
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "app_user")
 class User(
-	@Enumerated(STRING)
+	@Convert(converter = OAuthProviderConverter::class)
 	@Column(name = "oauth_provider", nullable = false)
 	val oauthProvider: OAuthProvider,
 
