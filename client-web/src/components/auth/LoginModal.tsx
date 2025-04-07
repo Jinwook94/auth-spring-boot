@@ -132,7 +132,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </div>
 
         <div className="text-xs text-center text-gray-500 mt-4 max-sm:mt-6">
-          로그인하면 Game Community의 이용약관에 동의하게 됩니다.
+          로그인하면 이용약관에 동의하게 됩니다.
         </div>
       </DialogContent>
     </Dialog>

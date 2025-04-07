@@ -25,7 +25,7 @@ export function Header() {
         <div className="flex items-center">
           {/* Logo */}
           <Link to="/" className="text-xl font-bold" onClick={handleClick}>
-            Game Community
+            Auth Spring Boot
           </Link>
 
           {/* Navigation */}
