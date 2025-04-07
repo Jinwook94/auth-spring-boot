@@ -1,22 +1,13 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Container } from "./Container";
-import { LoginModal } from "@/components/auth/LoginModal";
+import { AuthStatus } from "./AuthStatus";
+import PATH from "@/constants/path";
 import * as React from "react";
 
 export function Header() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
   // 클릭 이벤트 방지 함수
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-  };
-
-  // 로그인 버튼 클릭 핸들러
-  const handleLoginClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsLoginModalOpen(true);
   };
 
   return (
@@ -24,7 +15,7 @@ export function Header() {
       <Container className="h-full flex items-center justify-between">
         <div className="flex items-center">
           {/* Logo */}
-          <Link to="/" className="text-xl font-bold" onClick={handleClick}>
+          <Link to={PATH.HOME} className="text-xl font-bold">
             Auth Spring Boot
           </Link>
 
@@ -61,22 +52,9 @@ export function Header() {
           </nav>
         </div>
 
-        {/* 로그인 버튼 */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="font-medium"
-          onClick={handleLoginClick}
-        >
-          로그인
-        </Button>
+        {/* 인증 상태 영역 */}
+        <AuthStatus />
       </Container>
-
-      {/* 로그인 모달 */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
     </header>
   );
 }
