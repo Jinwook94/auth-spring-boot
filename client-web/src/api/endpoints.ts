@@ -2,9 +2,9 @@ import { Endpoint } from "./types";
 
 export const API_ENDPOINTS = {
   auth: {
-    googleLogin: "/api/v1/auth/google/login" as Endpoint,
-    kakaoLogin: "/api/v1/auth/kakao/login" as Endpoint,
-    naverLogin: "/api/v1/auth/naver/login" as Endpoint,
+    googleAuth: "/api/v1/auth/google/redirect" as Endpoint,
+    kakaoAuth: "/api/v1/auth/kakao/redirect" as Endpoint,
+    naverAuth: "/api/v1/auth/naver/redirect" as Endpoint,
     logout: "/api/v1/auth/logout" as Endpoint,
   },
 

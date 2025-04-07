@@ -16,15 +16,15 @@ interface LoginModalProps {
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleGoogleLogin = () => {
-    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.googleLogin}`;
+    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.googleAuth}`;
   };
 
   const handleKakaoLogin = () => {
-    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.kakaoLogin}`;
+    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.kakaoAuth}`;
   };
 
   const handleNaverLogin = () => {
-    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.naverLogin}`;
+    window.location.href = `${BASE_URL}${API_ENDPOINTS.auth.naverAuth}`;
   };
 
   return (
