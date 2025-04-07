@@ -29,6 +29,9 @@ app:
   cookie-domain: localhost
   client-base-url: http://localhost:5173
   server-base-url: http://localhost:8000
+  jwt-secret-key: local-dev-secret-key-must-be-at-least-32-bytes-long
+  access-token-expiration-seconds: 900
+  refresh-token-expiration-seconds: 1209600
 
 decorator:
   datasource:

@@ -68,6 +68,12 @@ class WebClientConfig {
 	}
 
 	@Bean
+	fun defaultWebClient(builder: WebClient.Builder): WebClient {
+		return builder
+			.build()
+	}
+
+	@Bean
 	fun exampleApiClient(builder: WebClient.Builder): WebClient {
 		return builder
 			.baseUrl("https://api.example.com")

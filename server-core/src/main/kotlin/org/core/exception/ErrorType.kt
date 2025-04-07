@@ -14,11 +14,17 @@ enum class ErrorType(
     INVALID_REQUEST(BAD_REQUEST, "A003", "잘못된 요청입니다."),
 
     EXPIRED_ACCESS_TOKEN(UNAUTHORIZED, "T001", "만료된 access token"),
+    EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "T002", "만료된 refresh token"),
+    OAUTH_TOKEN_REQUEST_FAILED(INTERNAL_SERVER_ERROR, "T003", "OAuth 토큰 요청에 실패했습니다."),
+    OAUTH_USER_INFO_REQUEST_FAILED(INTERNAL_SERVER_ERROR, "T004", "OAuth 유저 정보 요청에 실패했습니다."),
+    NOT_FOUND_REFRESH_TOKEN(BAD_REQUEST, "T005", "리프레시 토큰을 찾을 수 없습니다."),
+    INVALID_JWT(UNAUTHORIZED, "T005", "잘못된 JWT 입니다."),
 
     MISSING_CONFIGURATION(INTERNAL_SERVER_ERROR, "C001", "필수 구성 설정이 누락되었습니다."),
     OAUTH_SECRET_LOAD_FAILED(INTERNAL_SERVER_ERROR, "C002", "OAuth 시크릿 로드에 실패했습니다."),
     AWS_SECRET_ACCESS_FAILED(INTERNAL_SERVER_ERROR, "C003", "AWS Secrets Manager 접근에 실패했습니다."),
     OAUTH_ENV_VAR_MISSING(INTERNAL_SERVER_ERROR, "C004", "OAuth 환경 변수를 찾을 수 없습니다."),
+
     INTERNAL_SERVER_ERR(INTERNAL_SERVER_ERROR, "9999", "예기치 못한 서버오류")
     ;
 
