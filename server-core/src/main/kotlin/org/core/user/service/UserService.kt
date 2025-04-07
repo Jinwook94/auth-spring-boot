@@ -1,15 +1,25 @@
 package org.core.user.service
 
 import org.core.auth.domain.OAuthProvider
+import org.core.exception.ErrorType.INVALID_REQUEST
+import org.core.exception.general.NotFoundException
 import org.core.user.domain.User
 import org.core.user.domain.UserRole
 import org.core.user.repository.UserRepository
 import org.core.util.StringUtil.extractUsernameFromEmail
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class UserService(private val userRepository: UserRepository) {
+
+	@Transactional(readOnly = true)
+	fun findById(id: UUID): User {
+		return userRepository.findById(id).orElseThrow {
+			NotFoundException(INVALID_REQUEST, id.toString())
+		}
+	}
 
 	@Transactional
 	fun findByEmailOrCreate(oauthProvider: OAuthProvider, email: String): User {
